@@ -105,7 +105,9 @@ compound components.
 - Storybook for component documentation and visual review.
 - Design tokens or CSS variables once the design language is clearer.
 - Controlled component mode for consumers that need external state management.
+- Add test coverage for `defaultExpandedIds` and invalid default ids.
 - Keyboard arrow navigation and roving focus for richer keyboard ergonomics.
+- Add interaction tests for keyboard behavior if advanced keyboard navigation is introduced.
 - Animation support for panel transitions.
 - CI validation for lint, test, and build checks.
 - Package publishing setup when the library is ready for reuse.
