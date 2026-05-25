@@ -1,73 +1,111 @@
-# React + TypeScript + Vite
+# DLS Component Library
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository is a small component-library foundation for the DLS take-home
+assessment. The first implemented component is a reusable React Accordion with a
+demo page and unit tests based on the recovered assessment tests.
 
-Currently, two official plugins are available:
+## Tech Choices
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React + TypeScript: typed component APIs with a familiar UI model.
+- Vite: quick local development and simple production builds.
+- Vitest + React Testing Library: fast component tests focused on user-visible behavior.
+- user-event: realistic click interactions in tests.
+- jest-dom: readable DOM assertions such as `toBeVisible`.
+- jsdom: browser-like test environment for React Testing Library.
+- ESLint + Prettier: lightweight code quality and formatting support.
 
-## React Compiler
+## Scripts
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
+npm run build
+npm run lint
+npm run test
+npm run test:run
+npm run format
+npm run format:check
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- `dev`: starts the Vite dev server.
+- `build`: type-checks and builds the app.
+- `lint`: runs ESLint.
+- `test`: starts Vitest in watch mode.
+- `test:run`: runs Vitest once.
+- `format`: formats files with Prettier.
+- `format:check`: checks formatting without writing changes.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Running Locally
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Install dependencies and start the demo app:
+
+```bash
+npm install
+npm run dev
 ```
+
+Run the test suite:
+
+```bash
+npm run test:run
+```
+
+## Accordion API
+
+```tsx
+export type AccordionItem = {
+  id: string
+  title: React.ReactNode
+  content: React.ReactNode
+}
+
+export type AccordionProps = {
+  items: AccordionItem[]
+  shouldAllowMultipleExpanded?: boolean
+  defaultExpandedIds?: string[]
+  className?: string
+}
+```
+
+`shouldAllowMultipleExpanded` defaults to `true`, so multiple panels can be open
+at the same time. When set to `false`, opening one panel closes the previously
+expanded panel. `defaultExpandedIds` provides the initial uncontrolled expanded
+state. When it is omitted, all panels start collapsed.
+
+Example:
+
+```tsx
+<Accordion
+  items={[
+    { id: 'one', title: 'Panel one', content: 'Content for panel one' },
+    { id: 'two', title: 'Panel two', content: 'Content for panel two' },
+  ]}
+/>
+```
+
+## Accessibility Approach
+
+Each accordion trigger is a native `button` with `type="button"`,
+`aria-expanded`, and `aria-controls`. Each content panel is always rendered as a
+`role="region"` element with an `id`, `aria-labelledby`, and a `hidden` state
+when collapsed. Collapsed panel content is not mounted, which keeps
+`queryByText(...)` expectations aligned with the recovered tests while retaining
+the region elements for accessibility assertions. Focus styling is visible via
+`:focus-visible`.
+
+## Assessment Notes
+
+This implementation intentionally stays focused for the 2.5-hour assessment timebox. It
+sets up a maintainable folder structure under `src/ui`, demonstrates the
+component in `App.tsx`, and covers the behavior requested in the recovered tests
+without adding Storybook, CI, publishing, complex tokens, animations, or
+compound components.
+
+## Future Improvements
+
+- Storybook for component documentation and visual review.
+- Design tokens or CSS variables once the design language is clearer.
+- Controlled component mode for consumers that need external state management.
+- Keyboard arrow navigation and roving focus for richer keyboard ergonomics.
+- Animation support for panel transitions.
+- CI validation for lint, test, and build checks.
+- Package publishing setup when the library is ready for reuse.
